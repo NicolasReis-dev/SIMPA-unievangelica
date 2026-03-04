@@ -23,6 +23,6 @@
 2. Paula Tomazzelli
 3. Tales Ferreira
 4. Enzo Garcia
-5. João Pedro
+5. Joao Pedro Silva Reis
 6. Gabriel
 7. Matheus Felipe
