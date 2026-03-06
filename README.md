@@ -24,5 +24,5 @@
 3. Tales Ferreira
 4. Enzo Garcia
 5. Joao Pedro Silva Reis
-6. Gabriel
+6. João Gabriel Neres Araújo
 7. Matheus Felipe
