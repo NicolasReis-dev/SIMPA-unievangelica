@@ -1,56 +1,67 @@
+# Arquivo: app.py
+
+import csv
 import logging
 from flask import Flask, jsonify
+from models.aluno import Aluno # Importando a classe
 
-# -------------------------------------------------------------------------
-# 1. SETUP DO VAR (Configuração do Log Verboso)
-# -------------------------------------------------------------------------
+# SETUP DO LOG
 logging.basicConfig(
-    level=logging.DEBUG, # Nível fofoqueiro máximo ativado
+    level=logging.DEBUG,
     format='%(asctime)s | %(levelname)-8s | %(name)s | %(message)s',
     datefmt='%d/%m/%Y %H:%M:%S'
 )
 logger = logging.getLogger("SIMPA_API")
 
-# -------------------------------------------------------------------------
-# 2. INICIALIZAÇÃO DO FLASK (A nossa API)
-# -------------------------------------------------------------------------
 app = Flask(__name__)
 
-# Dados simulados provisórios (A Tarefa 5 do Trello vai trocar isso depois pelo CSV real)
-alunos_simulados = [
-    {"matricula": "2026001", "nome": "Nicolas", "risco": False},
-    {"matricula": "2026002", "nome": "Carlos", "risco": True}
-]
+# Banco de dados em memória
+banco_de_alunos = []
 
-# -------------------------------------------------------------------------
-# 3. ROTAS DA API (Os "Caminhos" de comunicação)
-# -------------------------------------------------------------------------
+def carregar_dados_csv():
+    """Lê o arquivo CSV e converte em objetos Orientados a Objetos."""
+    try:
+        with open('data/alunos.csv', mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                # Cria o objeto Aluno
+                aluno = Aluno(matricula=linha['matricula'], nome=linha['nome'])
+                # Insere as notas e faltas usando os métodos da classe
+                aluno.adicionar_nota(float(linha['nota_1']))
+                aluno.adicionar_nota(float(linha['nota_2']))
+                aluno.registrar_faltas(int(linha['faltas']))
+                
+                banco_de_alunos.append(aluno)
+        logger.info(f"Sucesso: {len(banco_de_alunos)} alunos carregados do CSV.")
+    except Exception as e:
+        logger.error(f"Erro ao ler o CSV: {e}")
+
+# Executa o carregamento antes do servidor ligar
+carregar_dados_csv()
+
+# ROTAS
 @app.route('/', methods=['GET'])
 def index():
-    """Rota raiz para testar se o servidor está online."""
-    logger.info("Acessaram a rota principal (Raiz).")
-    return jsonify({
-        "sistema": "SIMPA - UniEVANGÉLICA",
-        "status": "Online e operando",
-        "versao": "1.0 - Ciclo 1"
-    })
+    logger.info("Acessaram a rota principal.")
+    return jsonify({"sistema": "SIMPA - UniEVANGÉLICA", "status": "Online"})
 
 @app.route('/alunos', methods=['GET'])
 def listar_alunos():
-    """Rota que devolve a lista de alunos (Exigência do Marco 1)."""
-    logger.info("Solicitação para listar todos os alunos recebida.")
-    logger.debug(f"Enviando {len(alunos_simulados)} alunos para o cliente.")
+    """Retorna os dados dos alunos no formato JSON."""
+    logger.info("Solicitação GET /alunos recebida.")
     
-    # Retorna os dados formatados em JSON [cite: 342]
-    return jsonify({
-        "total_alunos": len(alunos_simulados),
-        "alunos": alunos_simulados
-    })
+    alunos_json = []
+    for aluno in banco_de_alunos:
+        alunos_json.append({
+            "matricula": aluno.matricula,
+            "nome": aluno.nome,
+            "media_atual": round(aluno.calcular_media(), 2),
+            "faltas": aluno.faltas,
+            "risco_evasao": aluno.risco
+        })
+        
+    return jsonify({"total_alunos": len(alunos_json), "alunos": alunos_json})
 
-# -------------------------------------------------------------------------
-# 4. RODANDO O SERVIDOR
-# -------------------------------------------------------------------------
 if __name__ == '__main__':
     logger.info("Iniciando o servidor do SIMPA na porta 5001...")
-    # debug=True reinicia o servidor sozinho se você alterar o código depois
     app.run(debug=True, host='0.0.0.0', port=5001)
