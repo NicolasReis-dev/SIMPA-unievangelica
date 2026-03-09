@@ -13,6 +13,14 @@
 * [cite_start]`data/`: Base de dados simulada (CSV/JSON)[cite: 280].
 * [cite_start]`docs/`: Documentação e Diagramas UML.
 
+## 📊 Dicionário de Dados (`alunos.csv`)
+* `matricula`: (Texto) Código de identificação único do aluno. Espera-se 7 dígitos.
+* `nome`: (Texto) Nome completo ou primeiro nome do aluno.
+* `nota_1`: (Decimal) Nota da primeira avaliação. Valores esperados entre 0.0 e 10.0.
+* `nota_2`: (Decimal) Nota da segunda avaliação. Valores esperados entre 0.0 e 10.0.
+* `faltas`: (Inteiro) Número total de aulas que o aluno faltou. Valores esperados de 0 para cima.
+
+
 ## 🚀 Tecnologias Utilizadas
 * [cite_start]Python 3 [cite: 485, 521]
 * [cite_start]Flask / FastAPI (Criação da API) [cite: 485, 521]
