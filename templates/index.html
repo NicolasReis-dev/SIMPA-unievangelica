@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIMPA — Sistema Acadêmico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream:    #F5EFE6;
+      --beige:    #E8D9C5;
+      --sand:     #C9A97A;
+      --terracota:#B5604A;
+      --rust:     #8C3D2B;
+      --brown:    #4A2C1A;
+      --white:    #FDFAF6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--brown);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: var(--terracota);
+      opacity: 0.25;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 40%;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: var(--sand);
+      opacity: 0.15;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      color: var(--cream);
+      letter-spacing: -0.5px;
+    }
+    header span {
+      font-size: 0.85rem;
+      color: var(--sand);
+      font-weight: 300;
+      margin-bottom: 6px;
+    }
+
+    /* ─── LAYOUT ─── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    @media (max-width: 760px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* ─── CARD BASE ─── */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(74,44,26,0.08);
+      border: 1px solid var(--beige);
+      animation: fadeUp 0.5s ease both;
+    }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--rust);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--beige);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-title .icon { font-size: 1.1rem; }
+
+    /* ─── FORMULÁRIO ─── */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--sand);
+      margin-bottom: 0.4rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1.5px solid var(--beige);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      background: var(--cream);
+      color: var(--brown);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--terracota);
+      box-shadow: 0 0 0 3px rgba(181,96,74,0.12);
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      background: var(--terracota);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover  { background: var(--rust); }
+    .btn:active { transform: scale(0.98); }
+
+    /* ─── FEEDBACK ─── */
+    #feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      display: none;
+    }
+    #feedback.ok    { background:#EAF4EC; color:#2E6B3E; border:1px solid #A8D5B5; display:block; }
+    #feedback.erro  { background:#FDECEA; color:#8B2A1E; border:1px solid #F5B0A8; display:block; }
+
+    /* ─── TABELA ─── */
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead tr {
+      background: var(--brown);
+      color: var(--cream);
+    }
+    thead th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 500;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--beige);
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: var(--cream); }
+    tbody td {
+      padding: 0.7rem 1rem;
+      color: var(--brown);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .badge-ok      { background:#EAF4EC; color:#2E6B3E; }
+    .badge-risco   { background:#FFF3CD; color:#856404; }
+    .badge-critico { background:#FDECEA; color:#8B2A1E; }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--sand);
+      font-size: 0.9rem;
+    }
+
+    #btn-carregar {
+      background: transparent;
+      border: 1.5px solid var(--terracota);
+      color: var(--terracota);
+      border-radius: 8px;
+      padding: 0.45rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: auto;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    #btn-carregar:hover { background: var(--terracota); color: var(--white); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>SIMPA</h1>
+    <span>Sistema Inteligente de Monitoramento e Predição Acadêmica</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- CADASTRO -->
+  <div class="card">
+    <h2 class="card-title"><span class="icon">✦</span> Cadastrar Aluno</h2>
+
+    <div class="form-group">
+      <label>Matrícula</label>
+      <input type="text" id="matricula" placeholder="Ex: 2400001" maxlength="7"/>
+    </div>
+    <div class="form-group">
+      <label>Nome completo</label>
+      <input type="text" id="nome" placeholder="Ex: João Silva"/>
+    </div>
+    <div class="form-group">
+      <label>Nota 1</label>
+      <input type="number" id="nota_1" placeholder="0.0 – 10.0" step="0.1" min="0" max="10"/>
+    </div>
+    <div class="form-group">
+      <label>Nota 2</label>
+      <input type="number" id="nota_2" placeholder="0.0 – 10.0" step="0.1" min="0" max="10"/>
+    </div>
+    <div class="form-group">
+      <label>Faltas</label>
+      <input type="number" id="faltas" placeholder="Nº de faltas" min="0"/>
+    </div>
+
+    <button class="btn" onclick="cadastrar()">Cadastrar</button>
+    <div id="feedback"></div>
+  </div>
+
+  <!-- LISTAGEM -->
+  <div class="card">
+    <h2 class="card-title"><span class="icon">◈</span> Alunos Cadastrados</h2>
+    <button id="btn-carregar" onclick="carregarAlunos()">↻ Atualizar lista</button>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Matrícula</th>
+            <th>Nome</th>
+            <th>Nota 1</th>
+            <th>Nota 2</th>
+            <th>Faltas</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-body">
+          <tr><td colspan="6" class="empty-state">Clique em "Atualizar lista" para carregar.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const API = 'http://127.0.0.1:5000';
+
+  async function cadastrar() {
+    const fb = document.getElementById('feedback');
+    const body = {
+      matricula: document.getElementById('matricula').value.trim(),
+      nome:      document.getElementById('nome').value.trim(),
+      nota_1:    parseFloat(document.getElementById('nota_1').value),
+      nota_2:    parseFloat(document.getElementById('nota_2').value),
+      faltas:    parseInt(document.getElementById('faltas').value),
+    };
+
+    if (!body.matricula || !body.nome || isNaN(body.nota_1) || isNaN(body.nota_2) || isNaN(body.faltas)) {
+      fb.className = 'erro';
+      fb.textContent = '⚠ Preencha todos os campos corretamente.';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/alunos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        fb.className = 'ok';
+        fb.textContent = `✓ ${data.mensagem}`;
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        carregarAlunos();
+      } else {
+        fb.className = 'erro';
+        fb.textContent = `✗ ${data.erro}`;
+      }
+    } catch(e) {
+      fb.className = 'erro';
+      fb.textContent = '✗ Não foi possível conectar à API.';
+    }
+  }
+
+  async function carregarAlunos() {
+    const tbody = document.getElementById('tabela-body');
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Carregando…</td></tr>';
+    try {
+      const res  = await fetch(`${API}/alunos`);
+      const data = await res.json();
+
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum aluno cadastrado.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(a => {
+        const media = ((parseFloat(a.nota_1) + parseFloat(a.nota_2)) / 2).toFixed(1);
+        const faltas = parseInt(a.faltas);
+        let badge = '';
+        if (media >= 7 && faltas <= 5)      badge = '<span class="badge badge-ok">Regular</span>';
+        else if (media >= 5 || faltas <= 10) badge = '<span class="badge badge-risco">Atenção</span>';
+        else                                 badge = '<span class="badge badge-critico">Risco</span>';
+        return `<tr>
+          <td>${a.matricula}</td>
+          <td>${a.nome}</td>
+          <td>${parseFloat(a.nota_1).toFixed(1)}</td>
+          <td>${parseFloat(a.nota_2).toFixed(1)}</td>
+          <td>${a.faltas}</td>
+          <td>${badge}</td>
+        </tr>`;
+      }).join('');
+    } catch(e) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Erro ao conectar com a API.</td></tr>';
+    }
+  }
+
+  carregarAlunos();
+</script>
+</body>
+</html>
