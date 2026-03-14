@@ -2,7 +2,7 @@
 
 import csv
 import logging
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from models.aluno import Aluno # Importando a classe
 
 # SETUP DO LOG
@@ -61,6 +61,34 @@ def listar_alunos():
         })
         
     return jsonify({"total_alunos": len(alunos_json), "alunos": alunos_json})
+
+@app.route('/alunos', methods=['POST'])
+def cadastrar_aluno():
+    """Cadastra um novo aluno no sistema."""
+    logger.info("Solicitação POST /alunos recebida.")
+    
+    dados = request.get_json()
+    
+    # Validação para não quebrar o servidor
+    if not dados or 'matricula' not in dados or 'nome' not in dados:
+        return jsonify({"erro": "Dados incompletos. Matrícula e nome são obrigatórios."}), 400
+        
+    try:
+        # Usa a nossa classe POO
+        novo_aluno = Aluno(matricula=dados['matricula'], nome=dados['nome'])
+        
+        if 'nota_1' in dados: novo_aluno.adicionar_nota(float(dados['nota_1']))
+        if 'nota_2' in dados: novo_aluno.adicionar_nota(float(dados['nota_2']))
+        if 'faltas' in dados: novo_aluno.registrar_faltas(int(dados['faltas']))
+        
+        banco_de_alunos.append(novo_aluno)
+        logger.info(f"Aluno {novo_aluno.nome} cadastrado com sucesso!")
+        
+        return jsonify({"mensagem": "Aluno cadastrado com sucesso!", "risco_evasao": novo_aluno.risco}), 201
+        
+    except Exception as e:
+        logger.error(f"Erro ao cadastrar: {e}")
+        return jsonify({"erro": "Erro interno do servidor."}), 500
 
 if __name__ == '__main__':
     logger.info("Iniciando o servidor do SIMPA na porta 5001...")
