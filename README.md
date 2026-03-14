@@ -26,15 +26,15 @@ Abaixo estão os diagramas estruturais do sistema para o Marco 1, detalhando a a
 ```mermaid
 classDiagram
     class Aluno {
-        - String matricula
-        - String nome
-        - List~float~ notas
-        - int faltas
-        - bool status_risco
-        + adicionar_nota(nota: float) void
-        + registrar_faltas(quantidade: int) void
-        + calcular_media() float
-        - atualizar_risco() void
+        -String matricula
+        -String nome
+        -list notas
+        -int faltas
+        -bool status_risco
+        +adicionar_nota(nota) void
+        +registrar_faltas(quantidade) void
+        +calcular_media() float
+        -atualizar_risco() void
     }
 ```
 
