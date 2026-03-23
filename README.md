@@ -53,6 +53,30 @@ flowchart LR
 * Flask (Criação da API)
 * Pandas / Numpy (Para análise de dados futura)
 
+## ⚙️ Como Executar o Projeto
+
+Siga os passos abaixo para rodar a API localmente na sua máquina:
+
+1. **Clone o repositório ou extraia o arquivo ZIP.**
+2. **Abra o terminal e navegue até a pasta raiz do projeto:**
+   ```bash
+   cd simpa-unievangelica
+   ```
+3. **Instale as dependências necessárias:**
+   O projeto utiliza o Flask. Para instalar, rode o comando:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   *(Ou instale manualmente usando `pip install flask`)*
+4. **Inicie o servidor da API:**
+   ```bash
+   python app.py
+   ```
+5. **Acesse no Navegador ou via Postman/Insomnia:**
+   A API estará rodando no endereço: `http://localhost:5001/`
+   * Para ver o status: Acesse `GET http://localhost:5001/`
+   * Para listar os alunos: Acesse `GET http://localhost:5001/alunos`
+
 ## 👥 Equipe de Desenvolvimento
 1. Nicolas Reis
 2. Paula Tomazzelli
