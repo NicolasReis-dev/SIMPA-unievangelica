@@ -1,13 +1,14 @@
 # Arquivo: app.py
 
+from models.aluno import Aluno
+from flask import Flask, jsonify, request
+import matplotlib.pyplot as plt
 import os
 import logging
 import pandas as pd
-import numpy as np  
-import matplotlib   
-matplotlib.use('Agg') 
-import matplotlib.pyplot as plt
-from flask import Flask, jsonify, request
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 
 
 # SETUP DO LOG
@@ -152,45 +153,50 @@ def dashboard_estatistico():
         logger.error(f"Erro ao gerar dashboard: {e}")
         return jsonify({"erro": f"Falha ao processar estatísticas: {str(e)}"}), 500
 
+
 @app.route('/predicao', methods=['GET'])
 def analise_preditiva():
     """Gera uma Regressão Linear simples e salva o gráfico de dispersão."""
     logger.info("Solicitação GET /predicao recebida.")
-    
+
     try:
         df_alunos = pd.read_csv(ARQUIVO_CSV)
-        df_alunos['media_final'] = (df_alunos['nota_1'] + df_alunos['nota_2']) / 2
-        
+        df_alunos['media_final'] = (
+            df_alunos['nota_1'] + df_alunos['nota_2']) / 2
+
         # 1. MATEMÁTICA DO NÍVEL 2: Regressão Linear (Faltas vs Média)
         x = df_alunos['faltas']
         y = df_alunos['media_final']
-        
+
         # O polyfit acha o "Coeficiente Angular" (o quanto a nota cai) e o "Intercepto"
         coeficiente, intercepto = np.polyfit(x, y, 1)
-        
+
         # 2. DESENHANDO O GRÁFICO (Visualização)
         plt.figure(figsize=(8, 6))
-        plt.scatter(x, y, color='blue', alpha=0.6, label='Alunos (Dados Reais)')
-        
+        plt.scatter(x, y, color='blue', alpha=0.6,
+                    label='Alunos (Dados Reais)')
+
         # Desenhando a linha de tendência matemática
         linha_tendencia = coeficiente * x + intercepto
-        plt.plot(x, linha_tendencia, color='red', linewidth=2, label='Linha de Tendência Preditiva')
-        
-        plt.title('Inteligência Analítica: Impacto das Faltas na Média Final', fontsize=14)
+        plt.plot(x, linha_tendencia, color='red', linewidth=2,
+                 label='Linha de Tendência Preditiva')
+
+        plt.title(
+            'Inteligência Analítica: Impacto das Faltas na Média Final', fontsize=14)
         plt.xlabel('Quantidade de Faltas', fontsize=12)
         plt.ylabel('Média Final do Aluno', fontsize=12)
         plt.legend()
         plt.grid(True, linestyle='--', alpha=0.7)
-        
+
         # 3. SALVANDO A IMAGEM NA PASTA DO PROJETO
         caminho_grafico = os.path.join('data', 'grafico_predicao.png')
         plt.savefig(caminho_grafico, bbox_inches='tight')
-        plt.close() # Limpa a memória para não pesar o servidor
-        
+        plt.close()  # Limpa a memória para não pesar o servidor
+
         # 4. TRADUZINDO A MATEMÁTICA PARA O COORDENADOR
         impacto_formatado = round(abs(coeficiente), 2)
         insight = f"Para cada 1 falta que o aluno tem, a regressão indica que sua nota cai em média {impacto_formatado} pontos."
-        
+
         return jsonify({
             "mensagem": "Análise preditiva concluída e gráfico salvo no disco!",
             "estatistica_avancada": {
@@ -199,10 +205,11 @@ def analise_preditiva():
                 "local_do_grafico": caminho_grafico
             }
         }), 200
-        
+
     except Exception as e:
         logger.error(f"Erro ao gerar predição: {e}")
         return jsonify({"erro": f"Falha na regressão linear: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     logger.info("Iniciando o servidor do SIMPA na porta 5001...")
