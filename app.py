@@ -103,6 +103,52 @@ def cadastrar_aluno():
         return jsonify({"erro": f"Erro interno do servidor: {str(e)}"}), 500
 
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard_estatistico():
+    """Gera indicadores estatísticos avançados para a coordenação."""
+    logger.info("Solicitação GET /dashboard recebida.")
+
+    try:
+        # 1. Carrega os dados com Pandas
+        df_alunos = pd.read_csv(ARQUIVO_CSV)
+
+        # 2. Calcula a média de CADA aluno e cria uma coluna virtual nova
+        df_alunos['media_final'] = (
+            df_alunos['nota_1'] + df_alunos['nota_2']) / 2
+
+        # 3. Matemática Estatística Avançada do Marco 2
+        estatisticas = {
+            "01_total_alunos": int(len(df_alunos)),
+            "02_media_geral_turma": round(float(df_alunos['media_final'].mean()), 2),
+            "03_variancia_notas": round(float(df_alunos['media_final'].var()), 2),
+            "04_desvio_padrao_notas": round(float(df_alunos['media_final'].std()), 2),
+            "05_total_faltas_acumuladas": int(df_alunos['faltas'].sum()),
+            "06_maior_nota_registrada": float(df_alunos['media_final'].max()),
+            "07_menor_nota_registrada": float(df_alunos['media_final'].min())
+        }
+
+        # 4. Encontra os alunos "Gênios" e os em "Risco Extremo" usando filtros do Pandas
+        melhor_aluno = df_alunos.loc[df_alunos['media_final'].idxmax()]
+
+        # Filtra alunos com faltas > 10 e média < 5.0
+        alunos_risco = df_alunos[(df_alunos['faltas'] > 10) & (
+            df_alunos['media_final'] < 5.0)]
+
+        resposta_completa = {
+            "indicadores_globais": estatisticas,
+            "insights_inteligentes": {
+                "aluno_destaque": melhor_aluno['nome'],
+                "quantidade_alunos_risco_critico": int(len(alunos_risco))
+            }
+        }
+
+        return jsonify(resposta_completa), 200
+
+    except Exception as e:
+        logger.error(f"Erro ao gerar dashboard: {e}")
+        return jsonify({"erro": f"Falha ao processar estatísticas: {str(e)}"}), 500
+
+
 if __name__ == '__main__':
     logger.info("Iniciando o servidor do SIMPA na porta 5001...")
     app.run(debug=True, host='0.0.0.0', port=5001)
