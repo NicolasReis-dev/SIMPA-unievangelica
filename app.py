@@ -5,13 +5,16 @@ from models.aluno import Aluno
 from flask import Flask, jsonify, request, render_template
 import matplotlib.pyplot as plt
 import os
+from dotenv import load_dotenv
 import logging
 import pandas as pd
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 
-genai.configure(api_key="AIzaSyDHwWZySuGde8-s3nnz-jrkbzkZm1CY34k")
+load_dotenv()
+chave_API = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=chave_API)
 
 # SETUP DO LOG
 logging.basicConfig(
