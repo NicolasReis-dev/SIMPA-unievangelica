@@ -2,14 +2,16 @@
 
 O SIMPA é uma plataforma analítica orientada a dados, desenvolvida como Projeto Integrador do 2º Período de Inteligência Artificial da UniEVANGÉLICA. 
 
-O objetivo do sistema é analisar notas, frequência e indicadores acadêmicos para identificar padrões, estimar riscos de evasão e oferecer recomendações estratégicas para a coordenação.
+O objetivo do sistema é analisar notas, frequência e indicadores acadêmicos para identificar padrões, estimar riscos de evasão e oferecer recomendações estratégicas para a coordenação utilizando Inteligência Artificial (Google Gemini).
 
-## 🏗️ Arquitetura do Projeto (Ciclo 1)
-O projeto segue a estrutura recomendada de separação de responsabilidades:
+## 🏗️ Arquitetura do Projeto (Ciclo Atualizado)
+O projeto evoluiu para uma aplicação Full-Stack, seguindo a estrutura recomendada de separação de responsabilidades:
 * `models/`: Entidades centrais e regras de negócio usando Programação Orientada a Objetos (POO).
-* `api/`: Rotas Flask/FastAPI para comunicação web.
-* `services/`: Cálculos estatísticos e validações de risco.
-* `data/`: Base de dados simulada (CSV/JSON).
+* `api/` e `app.py`: Rotas Flask para comunicação web e lógica de controle.
+* `services/`: Cálculos estatísticos, regressão preditiva e validações de risco.
+* `data/`: Base de dados (CSV) e armazenamento de gráficos preditivos.
+* `templates/`: Interface web do Dashboard Executivo (HTML).
+* `static/`: Recursos visuais e mídias (Logo, CSS).
 * `docs/`: Documentação e Diagramas UML.
 
 ## 📊 Dicionário de Dados (`alunos.csv`)
@@ -49,13 +51,14 @@ flowchart LR
 ```
 
 ## 🚀 Tecnologias Utilizadas
-* Python 3
-* Flask (Criação da API)
-* Pandas / Numpy (Para análise de dados futura)
+* **Backend:** Python 3, Flask
+* **Front-end:** HTML5, CSS3, Bootstrap (Dark Mode)
+* **Ciência de Dados:** Pandas, NumPy (Estatística), Matplotlib (Gráficos)
+* **Inteligência Artificial:** Google Generative AI (Gemini 2.5 Flash) para Planos de Ação.
 
 ## ⚙️ Como Executar o Projeto
 
-Siga os passos abaixo para rodar a API localmente na sua máquina:
+Siga os passos abaixo para rodar o SIMPA localmente na sua máquina:
 
 1. **Clone o repositório ou extraia o arquivo ZIP.**
 2. **Abra o terminal e navegue até a pasta raiz do projeto:**
@@ -63,19 +66,19 @@ Siga os passos abaixo para rodar a API localmente na sua máquina:
    cd simpa-unievangelica
    ```
 3. **Instale as dependências necessárias:**
-   O projeto utiliza o Flask. Para instalar, rode o comando:
+   O projeto utiliza bibliotecas externas. Para instalar, rode o comando:
    ```bash
    pip install -r requirements.txt
    ```
-   *(Ou instale manualmente usando `pip install flask`)*
-4. **Inicie o servidor da API:**
+4. **Inicie o servidor do sistema:**
    ```bash
    python app.py
    ```
-5. **Acesse no Navegador ou via Postman/Insomnia:**
-   A API estará rodando no endereço: `http://localhost:5001/`
-   * Para ver o status: Acesse `GET http://localhost:5001/`
-   * Para listar os alunos: Acesse `GET http://localhost:5001/alunos`
+5. **Acesse o Dashboard Executivo no Navegador:**
+   Abra o seu navegador (Chrome, Safari, etc.) e acesse:
+   👉 `http://localhost:5001/`
+   
+   A partir do Dashboard, você poderá visualizar as estatísticas globais, indicadores de risco e solicitar o Plano de Ação gerado pela IA.
 
 ## 👥 Equipe de Desenvolvimento
 1. Nicolas Reis

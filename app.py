@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 
-genai.configure(api_key="AIzaSyB08dslQkRggYKuS14wZGr05gxUoxWcQfk")
+genai.configure(api_key="AIzaSyDHwWZySuGde8-s3nnz-jrkbzkZm1CY34k")
 
 # SETUP DO LOG
 logging.basicConfig(

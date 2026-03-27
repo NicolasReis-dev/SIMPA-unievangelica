@@ -9,17 +9,25 @@
         body { background-color: #121212; }
         .card { background-color: #1e1e1e; border: 1px solid #333; }
         .sidebar { background-color: #0a0a0a; min-height: 100vh; border-right: 1px solid #333; }
+        
+        /* O truque do Tech Lead: max-height original (60px) para não empurrar o menu, 
+           e scale(1.7) para a logo crescer 70% visualmente! */
+        .logo-img { 
+            max-height: 60px; 
+            object-fit: contain; 
+            transform: scale(1.7); 
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-2 d-none d-md-block sidebar py-4">
-                <div class="text-center mb-4">
-                    <h3 class="text-info fw-bold">SIMPA</h3>
-                    <p class="text-muted small">Inteligência Acadêmica</p>
+                
+                <div class="text-center mb-4 px-3">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo SIMPA" class="img-fluid logo-img">
                 </div>
-                <ul class="nav flex-column px-3">
+                <ul class="nav flex-column px-3 mt-4">
                     <li class="nav-item mb-2"><a class="nav-link text-white fw-bold" href="#">📊 Dashboard</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-secondary" href="#">👥 Alunos (Em breve)</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-secondary" href="#">⚙️ Configurações</a></li>
@@ -74,31 +82,41 @@
     </div>
 
     <script>
-        // Carrega as estatísticas assim que o site abre
         window.onload = function() {
-            fetch('http://localhost:5001/dashboard')
+            fetch('/dashboard')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('total-alunos').innerText = data.indicadores_globais['01_total_alunos'];
                     document.getElementById('media-geral').innerText = data.indicadores_globais['02_media_geral_turma'];
                     document.getElementById('desvio-padrao').innerText = data.indicadores_globais['04_desvio_padrao_notas'];
                     document.getElementById('alunos-risco').innerText = data.insights_inteligentes['quantidade_alunos_risco_critico'];
-                });
+                })
+                .catch(error => console.error("Erro ao carregar dashboard:", error));
         };
 
-        // Função que aciona a sua IA no Python
         function gerarOrientacaoIA() {
             const boxIA = document.getElementById('box-ia');
-            boxIA.innerHTML = '<span class="text-warning">Analisando dados e gerando plano de ação... Aguarde.</span>';
+            boxIA.innerHTML = '<span class="text-warning spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <span class="text-warning">A inteligência artificial está analisando as notas e escrevendo o plano de ação (isso pode levar até 10 segundos)...</span>';
             
-            fetch('http://localhost:5001/orientacao_ia')
-                .then(response => response.json())
+            fetch('/orientacao_ia')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Servidor respondeu com status ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if(data.erro) {
-                        boxIA.innerHTML = `<span class="text-danger">Erro: ${data.erro}</span>`;
+                        boxIA.innerHTML = `<span class="text-danger fw-bold">Erro do Sistema:</span> <span class="text-danger">${data.erro}</span>`;
                     } else {
-                        boxIA.innerHTML = `<p>${data.orientacao_pedagogica_ia}</p>`;
+                        let textoIA = data.orientacao_pedagogica_ia;
+                        textoIA = textoIA.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        textoIA = textoIA.replace(/\n/g, '<br>');
+                        boxIA.innerHTML = `<p class="lh-lg">${textoIA}</p>`;
                     }
+                })
+                .catch(error => {
+                    boxIA.innerHTML = `<span class="text-danger fw-bold">Falha na conexão:</span> <span class="text-danger">${error.message}. Verifique o terminal do VS Code.</span>`;
                 });
         }
     </script>
