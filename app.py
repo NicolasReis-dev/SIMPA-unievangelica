@@ -1,5 +1,6 @@
 # Arquivo: app.py
 
+import google.generativeai as genai
 from models.aluno import Aluno
 from flask import Flask, jsonify, request
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 
+genai.configure(api_key="AIzaSyB08dslQkRggYKuS14wZGr05gxUoxWcQfk")
 
 # SETUP DO LOG
 logging.basicConfig(
@@ -209,6 +211,54 @@ def analise_preditiva():
     except Exception as e:
         logger.error(f"Erro ao gerar predição: {e}")
         return jsonify({"erro": f"Falha na regressão linear: {str(e)}"}), 500
+
+
+@app.route('/orientacao_ia', methods=['GET'])
+def gerar_orientacao_ia():
+    """Usa o Google Gemini para ler os dados críticos e gerar um plano de ação."""
+    logger.info("Solicitação GET /orientacao_ia recebida.")
+
+    try:
+        # 1. LER O BANCO E FILTRAR (O Músculo)
+        df_alunos = pd.read_csv(ARQUIVO_CSV)
+        df_alunos['media_final'] = (
+            df_alunos['nota_1'] + df_alunos['nota_2']) / 2
+
+        # Filtra apenas os alunos em risco crítico (muita falta e nota baixa)
+        alunos_risco = df_alunos[(df_alunos['faltas'] > 10) & (
+            df_alunos['media_final'] < 5.0)]
+
+        if alunos_risco.empty:
+            return jsonify({"mensagem": "Ótima notícia! Nenhum aluno em risco crítico no momento."}), 200
+
+        # 2. MONTAR O TEXTO PARA A IA LER
+        lista_alunos_texto = ""
+        for index, aluno in alunos_risco.iterrows():
+            lista_alunos_texto += f"- {aluno['nome']} (Matrícula: {aluno['matricula']}) | Média: {aluno['media_final']} | Faltas: {aluno['faltas']}\n"
+
+        prompt = f"""
+        Aja como um Coordenador Pedagógico universitário sênior e especialista em retenção de alunos.
+        Eu sou o sistema SIMPA e identifiquei os seguintes alunos em risco crítico de reprovação/evasão:
+        
+        {lista_alunos_texto}
+        
+        Por favor, gere um plano de ação curto, direto e estratégico (máximo de 2 parágrafos) 
+        com recomendações de como a faculdade deve abordar esses alunos para reverter a situação.
+        """
+
+        # 3. CHAMAR O GEMINI (O Cérebro)
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        resposta_ia = model.generate_content(prompt)
+
+        return jsonify({
+            "status": "sucesso",
+            "alunos_analisados": len(alunos_risco),
+            "orientacao_pedagogica_ia": resposta_ia.text
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Erro ao gerar orientacao com IA: {e}")
+        return jsonify({"erro": f"Falha ao comunicar com a IA: {str(e)}"}), 500
 
 
 if __name__ == '__main__':
