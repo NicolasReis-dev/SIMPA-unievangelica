@@ -2,7 +2,7 @@
 
 import google.generativeai as genai
 from models.aluno import Aluno
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import matplotlib.pyplot as plt
 import os
 import logging
@@ -31,8 +31,8 @@ ARQUIVO_CSV = os.path.join('data', 'alunos.csv')
 
 @app.route('/', methods=['GET'])
 def index():
-    logger.info("Acessaram a rota principal.")
-    return jsonify({"sistema": "SIMPA - UniEVANGÉLICA", "status": "Online"})
+    logger.info("Acessaram o site principal.")
+    return render_template('index.html')
 
 
 @app.route('/alunos', methods=['GET'])
