@@ -1,379 +1,300 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SIMPA — Sistema Acadêmico</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --cream:    #F5EFE6;
-      --beige:    #E8D9C5;
-      --sand:     #C9A97A;
-      --terracota:#B5604A;
-      --rust:     #8C3D2B;
-      --brown:    #4A2C1A;
-      --white:    #FDFAF6;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
-      color: var(--brown);
-      min-height: 100vh;
-    }
-
-    /* ─── HEADER ─── */
-    header {
-      background: var(--brown);
-      padding: 2rem 3rem;
-      display: flex;
-      align-items: flex-end;
-      gap: 1rem;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: var(--terracota);
-      opacity: 0.25;
-    }
-    header::after {
-      content: '';
-      position: absolute;
-      bottom: -60px; left: 40%;
-      width: 160px; height: 160px;
-      border-radius: 50%;
-      background: var(--sand);
-      opacity: 0.15;
-    }
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
-      color: var(--cream);
-      letter-spacing: -0.5px;
-    }
-    header span {
-      font-size: 0.85rem;
-      color: var(--sand);
-      font-weight: 300;
-      margin-bottom: 6px;
-    }
-
-    /* ─── LAYOUT ─── */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5rem;
-    }
-
-    @media (max-width: 760px) {
-      main { grid-template-columns: 1fr; }
-    }
-
-    /* ─── CARD BASE ─── */
-    .card {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 4px 24px rgba(74,44,26,0.08);
-      border: 1px solid var(--beige);
-      animation: fadeUp 0.5s ease both;
-    }
-    .card:nth-child(2) { animation-delay: 0.1s; }
-
-    @keyframes fadeUp {
-      from { opacity:0; transform: translateY(20px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
-
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      color: var(--rust);
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid var(--beige);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .card-title .icon { font-size: 1.1rem; }
-
-    /* ─── FORMULÁRIO ─── */
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--sand);
-      margin-bottom: 0.4rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.65rem 0.9rem;
-      border: 1.5px solid var(--beige);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      background: var(--cream);
-      color: var(--brown);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-    input:focus {
-      border-color: var(--terracota);
-      box-shadow: 0 0 0 3px rgba(181,96,74,0.12);
-    }
-
-    .btn {
-      width: 100%;
-      margin-top: 0.5rem;
-      padding: 0.8rem;
-      background: var(--terracota);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 500;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn:hover  { background: var(--rust); }
-    .btn:active { transform: scale(0.98); }
-
-    /* ─── FEEDBACK ─── */
-    #feedback {
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      display: none;
-    }
-    #feedback.ok    { background:#EAF4EC; color:#2E6B3E; border:1px solid #A8D5B5; display:block; }
-    #feedback.erro  { background:#FDECEA; color:#8B2A1E; border:1px solid #F5B0A8; display:block; }
-
-    /* ─── TABELA ─── */
-    .table-wrap {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    thead tr {
-      background: var(--brown);
-      color: var(--cream);
-    }
-    thead th {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      font-weight: 500;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-    tbody tr {
-      border-bottom: 1px solid var(--beige);
-      transition: background 0.15s;
-    }
-    tbody tr:hover { background: var(--cream); }
-    tbody td {
-      padding: 0.7rem 1rem;
-      color: var(--brown);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 500;
-    }
-    .badge-ok      { background:#EAF4EC; color:#2E6B3E; }
-    .badge-risco   { background:#FFF3CD; color:#856404; }
-    .badge-critico { background:#FDECEA; color:#8B2A1E; }
-
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-      color: var(--sand);
-      font-size: 0.9rem;
-    }
-
-    #btn-carregar {
-      background: transparent;
-      border: 1.5px solid var(--terracota);
-      color: var(--terracota);
-      border-radius: 8px;
-      padding: 0.45rem 1rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-left: auto;
-      display: block;
-      margin-bottom: 1rem;
-    }
-    #btn-carregar:hover { background: var(--terracota); color: var(--white); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPA - Dashboard Executivo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --border:#2a2a2a; --border2:#333; --text:#fff; --text2:#888; --text3:#555; --sidebar:#0a0a0a; --grid:#222; --tick:#666; }
+        [data-theme="light"] { --bg:#f4f6f9; --bg2:#ffffff; --bg3:#f0f0f0; --border:#e0e0e0; --border2:#ccc; --text:#111; --text2:#555; --text3:#999; --sidebar:#1e293b; --grid:#e5e7eb; --tick:#999; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); transition: background 0.3s, color 0.3s; }
+        .card { background-color: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+        .sidebar { background-color: var(--sidebar); min-height: 100vh; border-right: 1px solid var(--border2); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+        .nav-link { color: #aaa; border-radius: 8px; padding: 0.6rem 1rem !important; transition: all 0.2s; }
+        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+        .nav-link.active-link { color: #fff !important; background: rgba(255,255,255,0.15); font-weight: 600; }
+        .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: border-color 0.2s; }
+        .stat-card:hover { border-color: #444; }
+        .stat-value { font-size: 2rem; font-weight: 700; line-height: 1; margin-top: 0.25rem; }
+        .highlight-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .simpa-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 2px; }
+        .simpa-logo span { color: #0dcaf0; }
+        #box-ia { line-height: 1.7; font-size: 0.92rem; }
+        .rank-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom: 1px solid var(--border); }
+        .rank-item:last-child { border-bottom: none; }
+        .rank-medal { font-size: 1.3rem; width: 2rem; text-align:center; }
+        .rank-nome { flex:1; font-size:0.9rem; color: var(--text); }
+        .rank-media { font-size:0.85rem; font-weight:700; }
+        .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+        .theme-toggle:hover { color: var(--text); }
+        .sim-input { background: var(--bg3); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; width: 80px; }
+        .sim-result { font-size: 1.1rem; font-weight: 700; margin-top: 0.5rem; }
+    </style>
 </head>
 <body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="text-center mb-5 px-3">
+                <div class="simpa-logo">SIM<span>PA</span></div>
+                <div style="font-size:0.65rem; color:#777; letter-spacing:1px; margin-top:4px;">SISTEMA ACADÊMICO</div>
+            </div>
+            <ul class="nav flex-column px-2 gap-1">
+                <li class="nav-item"><a class="nav-link active-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pagina_alunos">👥 Alunos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analise">📈 Análise</a></li>
+                <li class="nav-item"><a class="nav-link" href="/configuracoes">⚙️ Configurações</a></li>
+            </ul>
+            <div class="px-3 mt-4">
+                <button class="theme-toggle w-100" onclick="alternarTema()">🌙 Modo Claro</button>
+            </div>
+        </nav>
 
-<header>
-  <div>
-    <h1>SIMPA</h1>
-    <span>Sistema Inteligente de Monitoramento e Predição Acadêmica</span>
-  </div>
-</header>
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom border-secondary">
+                <h1 class="h3 mb-0">Painel da Coordenação</h1>
+                <button class="btn btn-info btn-sm px-3" onclick="gerarOrientacaoIA()">🧠 Gerar Plano de Ação (IA)</button>
+            </div>
 
-<main>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3"><div class="stat-card"><div style="font-size:0.8rem;color:var(--text2)">Total de Alunos</div><div class="stat-value text-white" id="total-alunos">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card"><div style="font-size:0.8rem;color:var(--text2)">Média Geral</div><div class="stat-value text-success" id="media-geral">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card"><div style="font-size:0.8rem;color:var(--text2)">Desvio Padrão</div><div class="stat-value text-warning" id="desvio-padrao">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card" style="border-color:#3a0e0a"><div style="font-size:0.8rem;color:#f87171">Alunos em Risco</div><div class="stat-value" style="color:#f87171" id="alunos-risco">—</div></div></div>
+            </div>
 
-  <!-- CADASTRO -->
-  <div class="card">
-    <h2 class="card-title"><span class="icon">✦</span> Cadastrar Aluno</h2>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="highlight-card h-100">
+                        <div style="font-size:0.7rem;color:#4ade80;text-transform:uppercase;letter-spacing:1px">⭐ Aluno Destaque</div>
+                        <div id="aluno-destaque" class="fw-bold mt-1" style="font-size:1.1rem;color:var(--text)">—</div>
+                        <div id="aluno-destaque-info" style="font-size:0.82rem;color:var(--text2)">—</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="highlight-card h-100" style="border-color:#3a0e0a">
+                        <div style="font-size:0.7rem;color:#f87171;text-transform:uppercase;letter-spacing:1px">⚠️ Maior Risco</div>
+                        <div id="aluno-risco-nome" class="fw-bold mt-1" style="font-size:1.1rem;color:var(--text)">—</div>
+                        <div id="aluno-risco-info" style="font-size:0.82rem;color:var(--text2)">—</div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="form-group">
-      <label>Matrícula</label>
-      <input type="text" id="matricula" placeholder="Ex: 2400001" maxlength="7"/>
+            <div class="row g-3 mb-4">
+                <div class="col-md-8">
+                    <div class="card p-3">
+                        <h6 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2)" class="mb-3">Médias por Aluno</h6>
+                        <canvas id="grafico-barras" height="120"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3">
+                        <h6 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2)" class="mb-3">Distribuição de Status</h6>
+                        <canvas id="grafico-pizza" height="180"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h6 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2)" class="mb-3">🏆 Ranking da Turma</h6>
+                        <div id="ranking-lista">Carregando...</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h6 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2)" class="mb-3">🧮 Simulador de Nota</h6>
+                        <p style="font-size:0.85rem;color:var(--text2)">Selecione um aluno e simule o impacto de uma nova nota na média final.</p>
+                        <div class="mb-2">
+                            <label style="font-size:0.8rem;color:var(--text2)">Aluno</label>
+                            <select id="sim-aluno" class="form-select form-select-sm mt-1" style="background:var(--bg3);border-color:var(--border2);color:var(--text)">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label style="font-size:0.8rem;color:var(--text2)">Nova nota hipotética (0–10)</label>
+                            <input type="number" id="sim-nota" class="sim-input mt-1" min="0" max="10" step="0.1" placeholder="Ex: 8.0" oninput="simularNota()">
+                        </div>
+                        <div id="sim-resultado" class="sim-result"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-4">
+                <h6 class="text-info mb-3">🤖 Orientação Pedagógica Inteligente (Groq)</h6>
+                <div id="box-ia" style="color:var(--text2)">
+                    <em>Clique em "Gerar Plano de Ação (IA)" para a inteligência artificial analisar a turma...</em>
+                </div>
+            </div>
+        </main>
     </div>
-    <div class="form-group">
-      <label>Nome completo</label>
-      <input type="text" id="nome" placeholder="Ex: João Silva"/>
-    </div>
-    <div class="form-group">
-      <label>Nota 1</label>
-      <input type="number" id="nota_1" placeholder="0.0 – 10.0" step="0.1" min="0" max="10"/>
-    </div>
-    <div class="form-group">
-      <label>Nota 2</label>
-      <input type="number" id="nota_2" placeholder="0.0 – 10.0" step="0.1" min="0" max="10"/>
-    </div>
-    <div class="form-group">
-      <label>Faltas</label>
-      <input type="number" id="faltas" placeholder="Nº de faltas" min="0"/>
-    </div>
-
-    <button class="btn" onclick="cadastrar()">Cadastrar</button>
-    <div id="feedback"></div>
-  </div>
-
-  <!-- LISTAGEM -->
-  <div class="card">
-    <h2 class="card-title"><span class="icon">◈</span> Alunos Cadastrados</h2>
-    <button id="btn-carregar" onclick="carregarAlunos()">↻ Atualizar lista</button>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Matrícula</th>
-            <th>Nome</th>
-            <th>Nota 1</th>
-            <th>Nota 2</th>
-            <th>Faltas</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-body">
-          <tr><td colspan="6" class="empty-state">Clique em "Atualizar lista" para carregar.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</main>
+</div>
 
 <script>
-  const API = 'http://127.0.0.1:5000';
+let graficoBarras = null;
+let graficoPizza = null;
+let todosAlunos = [];
 
-  async function cadastrar() {
-    const fb = document.getElementById('feedback');
-    const body = {
-      matricula: document.getElementById('matricula').value.trim(),
-      nome:      document.getElementById('nome').value.trim(),
-      nota_1:    parseFloat(document.getElementById('nota_1').value),
-      nota_2:    parseFloat(document.getElementById('nota_2').value),
-      faltas:    parseInt(document.getElementById('faltas').value),
-    };
+const temaBtn = document.querySelector('.theme-toggle');
 
-    if (!body.matricula || !body.nome || isNaN(body.nota_1) || isNaN(body.nota_2) || isNaN(body.faltas)) {
-      fb.className = 'erro';
-      fb.textContent = '⚠ Preencha todos os campos corretamente.';
-      return;
+function getCSSVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function alternarTema() {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        temaBtn.textContent = '🌙 Modo Claro';
+        localStorage.setItem('tema', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        temaBtn.textContent = '☀️ Modo Escuro';
+        localStorage.setItem('tema', 'light');
     }
+    // Reconstrói gráficos com cores corretas
+    if (todosAlunos.length) construirGraficos(todosAlunos);
+}
 
-    try {
-      const res = await fetch(`${API}/alunos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
+if (localStorage.getItem('tema') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    temaBtn.textContent = '☀️ Modo Escuro';
+}
 
-      if (res.ok) {
-        fb.className = 'ok';
-        fb.textContent = `✓ ${data.mensagem}`;
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        carregarAlunos();
-      } else {
-        fb.className = 'erro';
-        fb.textContent = `✗ ${data.erro}`;
-      }
-    } catch(e) {
-      fb.className = 'erro';
-      fb.textContent = '✗ Não foi possível conectar à API.';
-    }
-  }
+window.onload = function () { carregarDashboard(); };
 
-  async function carregarAlunos() {
-    const tbody = document.getElementById('tabela-body');
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Carregando…</td></tr>';
-    try {
-      const res  = await fetch(`${API}/alunos`);
-      const data = await res.json();
+function carregarDashboard() {
+    fetch('/dashboard').then(r => r.json()).then(data => {
+        document.getElementById('total-alunos').innerText  = data.indicadores_globais['01_total_alunos'];
+        document.getElementById('media-geral').innerText   = data.indicadores_globais['02_media_geral_turma'];
+        document.getElementById('desvio-padrao').innerText = data.indicadores_globais['04_desvio_padrao_notas'];
+        document.getElementById('alunos-risco').innerText  = data.insights_inteligentes['quantidade_alunos_risco_critico'];
+    }).catch(e => console.error("Erro dashboard:", e));
 
-      if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum aluno cadastrado.</td></tr>';
-        return;
-      }
+    fetch('/alunos').then(r => r.json()).then(data => {
+        todosAlunos = data.alunos || [];
+        if (!todosAlunos.length) return;
 
-      tbody.innerHTML = data.map(a => {
-        const media = ((parseFloat(a.nota_1) + parseFloat(a.nota_2)) / 2).toFixed(1);
-        const faltas = parseInt(a.faltas);
-        let badge = '';
-        if (media >= 7 && faltas <= 5)      badge = '<span class="badge badge-ok">Regular</span>';
-        else if (media >= 5 || faltas <= 10) badge = '<span class="badge badge-risco">Atenção</span>';
-        else                                 badge = '<span class="badge badge-critico">Risco</span>';
-        return `<tr>
-          <td>${a.matricula}</td>
-          <td>${a.nome}</td>
-          <td>${parseFloat(a.nota_1).toFixed(1)}</td>
-          <td>${parseFloat(a.nota_2).toFixed(1)}</td>
-          <td>${a.faltas}</td>
-          <td>${badge}</td>
-        </tr>`;
-      }).join('');
-    } catch(e) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Erro ao conectar com a API.</td></tr>';
-    }
-  }
+        const destaque = todosAlunos.reduce((a, b) => parseFloat(a.media_atual) > parseFloat(b.media_atual) ? a : b);
+        document.getElementById('aluno-destaque').innerText = '🏆 ' + destaque.nome;
+        document.getElementById('aluno-destaque-info').innerText = `Média: ${destaque.media_atual} | Faltas: ${destaque.faltas}`;
 
-  carregarAlunos();
+        const emRisco = todosAlunos.filter(a => parseInt(a.faltas) > 10 && parseFloat(a.media_atual) < 5.0);
+        if (emRisco.length > 0) {
+            const pior = emRisco.reduce((a, b) => parseFloat(a.media_atual) < parseFloat(b.media_atual) ? a : b);
+            document.getElementById('aluno-risco-nome').innerText = '🚨 ' + pior.nome;
+            document.getElementById('aluno-risco-info').innerText = `Média: ${pior.media_atual} | Faltas: ${pior.faltas}`;
+        } else {
+            document.getElementById('aluno-risco-nome').innerText = '✅ Nenhum em risco crítico';
+            document.getElementById('aluno-risco-info').innerText = 'Todos os alunos estão dentro dos parâmetros.';
+        }
+
+        construirGraficos(todosAlunos);
+
+        // Ranking
+        const ordenados = [...todosAlunos].sort((a,b) => parseFloat(b.media_atual) - parseFloat(a.media_atual));
+        const medalhas = ['🥇','🥈','🥉'];
+        document.getElementById('ranking-lista').innerHTML = ordenados.map((a, i) => {
+            const media = parseFloat(a.media_atual);
+            const cor = media >= 7 ? '#4ade80' : media >= 5 ? '#fbbf24' : '#f87171';
+            const medal = i < 3 ? medalhas[i] : `<span style="color:var(--text3);font-size:0.8rem">${i+1}º</span>`;
+            return `<div class="rank-item"><div class="rank-medal">${medal}</div><div class="rank-nome">${a.nome}</div><div class="rank-media" style="color:${cor}">${media.toFixed(2)}</div></div>`;
+        }).join('');
+
+        // Simulador
+        const sel = document.getElementById('sim-aluno');
+        sel.innerHTML = '<option value="">Selecione...</option>' +
+            todosAlunos.map(a => `<option value="${a.matricula}" data-n1="${a.nota_1}" data-n2="${a.nota_2}">${a.nome}</option>`).join('');
+    }).catch(e => console.error("Erro alunos:", e));
+}
+
+function construirGraficos(alunos) {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const gridColor = isLight ? '#e5e7eb' : '#222';
+    const tickColor = isLight ? '#888' : '#666';
+    const legendColor = isLight ? '#444' : '#888';
+
+    // Cores das barras — mais escuras no modo claro para contraste
+    const coresBarra = alunos.map(a => {
+        const m = parseFloat(a.media_atual);
+        if (isLight) return m >= 7 ? '#16a34a' : m >= 5 ? '#d97706' : '#dc2626';
+        return m >= 7 ? '#4ade80' : m >= 5 ? '#fbbf24' : '#f87171';
+    });
+
+    if (graficoBarras) graficoBarras.destroy();
+    graficoBarras = new Chart(document.getElementById('grafico-barras'), {
+        type: 'bar',
+        data: {
+            labels: alunos.map(a => a.nome),
+            datasets: [{ label: 'Média', data: alunos.map(a => parseFloat(a.media_atual)), backgroundColor: coresBarra, borderRadius: 4 }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: tickColor, font: { size: 10 } }, grid: { color: gridColor } },
+                y: { min: 0, max: 10, ticks: { color: tickColor }, grid: { color: gridColor } }
+            }
+        }
+    });
+
+    const regular = alunos.filter(a => parseFloat(a.media_atual) >= 7 && parseInt(a.faltas) <= 5).length;
+    const atencao = alunos.filter(a => { const m=parseFloat(a.media_atual),f=parseInt(a.faltas); return !(m>=7&&f<=5)&&!(f>10&&m<5); }).length;
+    const critico = alunos.filter(a => parseInt(a.faltas) > 10 && parseFloat(a.media_atual) < 5.0).length;
+
+    // Cores da pizza — mais vibrantes no modo claro
+    const bgPizza  = isLight ? ['#bbf7d0','#fef08a','#fecaca'] : ['#1a3a24','#3a2e0a','#3a0e0a'];
+    const brdPizza = isLight ? ['#16a34a','#d97706','#dc2626'] : ['#4ade80','#fbbf24','#f87171'];
+
+    if (graficoPizza) graficoPizza.destroy();
+    graficoPizza = new Chart(document.getElementById('grafico-pizza'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Regular', 'Atenção', 'Risco'],
+            datasets: [{ data: [regular, atencao, critico], backgroundColor: bgPizza, borderColor: brdPizza, borderWidth: 2 }]
+        },
+        options: { plugins: { legend: { labels: { color: legendColor, font: { size: 11 } } } } }
+    });
+}
+
+function simularNota() {
+    const sel = document.getElementById('sim-aluno');
+    const opt = sel.options[sel.selectedIndex];
+    const novaNota = parseFloat(document.getElementById('sim-nota').value);
+    const res = document.getElementById('sim-resultado');
+    if (!opt.value || isNaN(novaNota)) { res.innerHTML = ''; return; }
+    const n1 = parseFloat(opt.dataset.n1);
+    const n2 = parseFloat(opt.dataset.n2);
+    const mediaAtual = (n1 + n2) / 2;
+    const mediaSimulada = (n1 + n2 + novaNota) / 3;
+    const diff = mediaSimulada - mediaAtual;
+    const cor = diff >= 0 ? '#4ade80' : '#f87171';
+    const sinal = diff >= 0 ? '+' : '';
+    const status = mediaSimulada >= 7 ? '✅ Aprovado' : mediaSimulada >= 5 ? '⚠️ Atenção' : '❌ Reprovado';
+    res.innerHTML = `
+        <div style="color:${cor}">Nova média estimada: <strong>${mediaSimulada.toFixed(2)}</strong> (${sinal}${diff.toFixed(2)})</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:4px">${status}</div>
+    `;
+}
+
+function gerarOrientacaoIA() {
+    const box = document.getElementById('box-ia');
+    box.innerHTML = '<span class="text-warning">⏳ A IA está analisando a turma, aguarde...</span>';
+    fetch('/orientacao_ia')
+        .then(r => { if (!r.ok) throw new Error(`Status ${r.status}`); return r.json(); })
+        .then(data => {
+            if (data.erro) box.innerHTML = `<span class="text-danger">❌ ${data.erro}</span>`;
+            else if (data.mensagem) box.innerHTML = `<span class="text-success">✅ ${data.mensagem}</span>`;
+            else {
+                let txt = data.orientacao_pedagogica_ia.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                box.innerHTML = `<div style="color:var(--text)">${txt}</div>`;
+            }
+        })
+        .catch(e => { box.innerHTML = `<span class="text-danger">❌ ${e.message}</span>`; });
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPA - Análise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --border:#2a2a2a; --border2:#333; --text:#fff; --text2:#888; --sidebar:#0a0a0a; }
+        [data-theme="light"] { --bg:#f4f6f9; --bg2:#fff; --bg3:#f0f0f0; --border:#e0e0e0; --border2:#ccc; --text:#111; --text2:#555; --sidebar:#1e293b; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); transition: background 0.3s; }
+        .card { background-color: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+        .sidebar { background-color: var(--sidebar); min-height: 100vh; border-right: 1px solid var(--border2); }
+        .nav-link { color: #aaa; border-radius: 8px; padding: 0.6rem 1rem !important; transition: all 0.2s; }
+        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+        .nav-link.active-link { color: #fff !important; background: rgba(255,255,255,0.15); font-weight: 600; }
+        .simpa-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 2px; }
+        .simpa-logo span { color: #0dcaf0; }
+        .stat-mini { background: var(--bg3); border-radius: 8px; padding: 0.75rem 1rem; }
+        .stat-mini .label { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
+        .stat-mini .value { font-size: 1.3rem; font-weight: 700; margin-top: 2px; }
+        .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; }
+        .timeline { position: relative; padding-left: 1.5rem; }
+        .timeline::before { content:''; position:absolute; left:0.4rem; top:0; bottom:0; width:2px; background: var(--border2); }
+        .timeline-item { position: relative; margin-bottom: 1.25rem; }
+        .timeline-dot { position:absolute; left:-1.15rem; top:0.35rem; width:12px; height:12px; border-radius:50%; border:2px solid; }
+        .timeline-dot.turma { background:#0dcaf0; border-color:#0dcaf0; }
+        .timeline-dot.individual { background:#4ade80; border-color:#4ade80; }
+        .timeline-box { background: var(--bg3); border-radius: 8px; padding: 0.75rem 1rem; }
+        .timeline-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+
+        /* Heatmap */
+        .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+        .heatmap-cell { border-radius: 10px; padding: 0.75rem; cursor: pointer; transition: transform 0.15s; text-decoration: none; display: block; }
+        .heatmap-cell:hover { transform: scale(1.04); }
+        .heatmap-cell .h-nome { font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; }
+        .heatmap-cell .h-info { font-size: 0.72rem; opacity: 0.85; }
+        .nivel-0 { background: #1a3a24; color: #4ade80; border: 1px solid #4ade8044; }
+        .nivel-1 { background: #2a3010; color: #a3e635; border: 1px solid #a3e63544; }
+        .nivel-2 { background: #3a2e0a; color: #fbbf24; border: 1px solid #fbbf2444; }
+        .nivel-3 { background: #3a0e0a; color: #f87171; border: 1px solid #f8717144; }
+        [data-theme="light"] .nivel-0 { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
+        [data-theme="light"] .nivel-1 { background:#ecfccb; color:#3f6212; border-color:#bef264; }
+        [data-theme="light"] .nivel-2 { background:#fef3c7; color:#92400e; border-color:#fde68a; }
+        [data-theme="light"] .nivel-3 { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="text-center mb-5 px-3">
+                <div class="simpa-logo">SIM<span>PA</span></div>
+                <div style="font-size:0.65rem; color:#777; letter-spacing:1px; margin-top:4px;">SISTEMA ACADÊMICO</div>
+            </div>
+            <ul class="nav flex-column px-2 gap-1">
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pagina_alunos">👥 Alunos</a></li>
+                <li class="nav-item"><a class="nav-link active-link" href="/analise">📈 Análise</a></li>
+                <li class="nav-item"><a class="nav-link" href="/configuracoes">⚙️ Configurações</a></li>
+            </ul>
+            <div class="px-3 mt-4">
+                <button class="theme-toggle w-100" onclick="alternarTema()">🌙 Modo Claro</button>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="pb-2 mb-4 border-bottom border-secondary">
+                <h1 class="h3 mb-0">📈 Análise Preditiva</h1>
+                <p style="color:var(--text2)" class="small mt-1">Regressão linear, heatmap e estatísticas avançadas</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3"><div class="stat-mini"><div class="label">Média Nota 1</div><div class="value text-info" id="s-nota1">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-mini"><div class="label">Média Nota 2</div><div class="value text-info" id="s-nota2">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-mini"><div class="label">Variância</div><div class="value text-warning" id="s-variancia">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-mini"><div class="label">Impacto por Falta</div><div class="value text-danger" id="s-coef">—</div></div></div>
+            </div>
+
+            <!-- Insight -->
+            <div class="card p-3 mb-4">
+                <div style="font-size:0.7rem; color:#0dcaf0; text-transform:uppercase; letter-spacing:1px;">💡 Insight da Regressão</div>
+                <div id="insight-texto" style="color:var(--text); font-size:0.92rem" class="mt-1">Carregando...</div>
+            </div>
+
+            <!-- Heatmap -->
+            <div class="card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-0">🌡️ Mapa de Risco da Turma</h6>
+                    <div class="d-flex gap-2" style="font-size:0.7rem">
+                        <span class="px-2 py-1 rounded" style="background:#1a3a24;color:#4ade80">✅ Regular</span>
+                        <span class="px-2 py-1 rounded" style="background:#2a3010;color:#a3e635">⚡ Leve</span>
+                        <span class="px-2 py-1 rounded" style="background:#3a2e0a;color:#fbbf24">⚠️ Atenção</span>
+                        <span class="px-2 py-1 rounded" style="background:#3a0e0a;color:#f87171">🚨 Crítico</span>
+                    </div>
+                </div>
+                <div id="heatmap-grid" class="heatmap-grid">Carregando...</div>
+                <p style="font-size:0.72rem; color:var(--text2)" class="mt-3 mb-0">Clique em um aluno para ver o relatório completo.</p>
+            </div>
+
+            <!-- Dispersão -->
+            <div class="card p-4 mb-4">
+                <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-3">Dispersão: Faltas × Média Final</h6>
+                <canvas id="grafico-dispersao" height="80"></canvas>
+            </div>
+
+            <!-- Comparativo -->
+            <div class="card p-4 mb-4">
+                <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-3">Comparativo: Nota 1 vs Nota 2</h6>
+                <canvas id="grafico-comparativo" height="80"></canvas>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-0">🕐 Histórico de Orientações IA</h6>
+                    <div class="d-flex gap-2" style="font-size:0.72rem; color:var(--text2)"><span>🔵 Turma</span><span>🟢 Individual</span></div>
+                </div>
+                <div id="historico-lista" class="timeline">
+                    <p style="color:var(--text2)" class="text-center py-3">Carregando histórico...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+const temaBtn = document.querySelector('.theme-toggle');
+function alternarTema() {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        temaBtn.textContent = '🌙 Modo Claro';
+        localStorage.setItem('tema', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        temaBtn.textContent = '☀️ Modo Escuro';
+        localStorage.setItem('tema', 'light');
+    }
+}
+if (localStorage.getItem('tema') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    temaBtn.textContent = '☀️ Modo Escuro';
+}
+
+window.onload = function() { carregarAnalise(); carregarHeatmap(); carregarHistorico(); };
+
+function carregarAnalise() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const gridC = isLight ? '#e5e7eb' : '#222';
+    const tickC = isLight ? '#888' : '#666';
+
+    fetch('/predicao').then(r => r.json()).then(data => {
+        const ea = data.estatistica_avancada;
+        const dg = data.dados_grafico;
+        document.getElementById('s-nota1').innerText = ea.media_nota1;
+        document.getElementById('s-nota2').innerText = ea.media_nota2;
+        document.getElementById('s-variancia').innerText = ea.variancia;
+        document.getElementById('s-coef').innerText = '-' + Math.abs(ea.coeficiente_angular).toFixed(2) + ' pts/falta';
+        document.getElementById('insight-texto').innerText = ea.insight_traduzido;
+
+        const pontosReais = dg.faltas.map((f, i) => ({ x: f, y: dg.medias[i], nome: dg.nomes[i] }));
+        const linhaFaltas = [...new Set(dg.faltas)].sort((a,b)=>a-b);
+        const pontosLinha = linhaFaltas.map(f => ({ x: f, y: ea.coeficiente_angular * f + ea.intercepto }));
+
+        new Chart(document.getElementById('grafico-dispersao'), {
+            type: 'scatter',
+            data: { datasets: [
+                { label: 'Alunos', data: pontosReais, backgroundColor: '#0dcaf0aa', borderColor: '#0dcaf0', pointRadius: 6, pointHoverRadius: 8 },
+                { label: 'Tendência', data: pontosLinha, type: 'line', borderColor: '#f87171', borderWidth: 2, pointRadius: 0, fill: false, tension: 0 }
+            ]},
+            options: {
+                plugins: { legend: { labels: { color: tickC } }, tooltip: { callbacks: { label: ctx => ctx.datasetIndex===0 ? `${pontosReais[ctx.dataIndex].nome}: Média ${ctx.parsed.y.toFixed(2)}, Faltas ${ctx.parsed.x}` : `Tendência: ${ctx.parsed.y.toFixed(2)}` }}},
+                scales: {
+                    x: { title:{display:true, text:'Faltas', color:tickC}, ticks:{color:tickC}, grid:{color:gridC} },
+                    y: { min:0, max:10, title:{display:true, text:'Média Final', color:tickC}, ticks:{color:tickC}, grid:{color:gridC} }
+                }
+            }
+        });
+
+        fetch('/alunos').then(r=>r.json()).then(d => {
+            new Chart(document.getElementById('grafico-comparativo'), {
+                type: 'bar',
+                data: {
+                    labels: d.alunos.map(a=>a.nome),
+                    datasets: [
+                        { label:'Nota 1', data: d.alunos.map(a=>a.nota_1), backgroundColor: isLight ? '#0284c7aa' : '#0dcaf055', borderColor: isLight ? '#0284c7' : '#0dcaf0', borderWidth:1, borderRadius:4 },
+                        { label:'Nota 2', data: d.alunos.map(a=>a.nota_2), backgroundColor: isLight ? '#16a34aaa' : '#4ade8055', borderColor: isLight ? '#16a34a' : '#4ade80', borderWidth:1, borderRadius:4 }
+                    ]
+                },
+                options: { plugins:{legend:{labels:{color:tickC}}}, scales:{ x:{ticks:{color:tickC,font:{size:10}},grid:{color:gridC}}, y:{min:0,max:10,ticks:{color:tickC},grid:{color:gridC}} }}
+            });
+        });
+    }).catch(e => console.error("Erro análise:", e));
+}
+
+function carregarHeatmap() {
+    fetch('/heatmap').then(r => r.json()).then(data => {
+        const grid = document.getElementById('heatmap-grid');
+        grid.innerHTML = data.map(a => `
+            <a href="/relatorio/${a.matricula}" class="heatmap-cell nivel-${a.nivel}">
+                <div class="h-nome">${a.nome}</div>
+                <div class="h-info">Média: ${a.media} | Faltas: ${a.faltas}</div>
+            </a>
+        `).join('');
+    }).catch(e => console.error("Erro heatmap:", e));
+}
+
+function carregarHistorico() {
+    fetch('/historico_ia').then(r=>r.json()).then(data => {
+        const lista = document.getElementById('historico-lista');
+        if (!data || data.length === 0) {
+            lista.innerHTML = '<p style="color:var(--text2)" class="text-center py-3">Nenhuma orientação gerada ainda.</p>';
+            return;
+        }
+        lista.innerHTML = data.map(item => {
+            const tipo = item.tipo === 'turma' ? '🏫 Turma' : `👤 ${item.aluno}`;
+            const cls  = item.tipo === 'turma' ? 'turma' : 'individual';
+            const info = item.tipo === 'turma' ? `${item.alunos_analisados} alunos analisados` : `Média: ${item.media} | Faltas: ${item.faltas}`;
+            const resumo = item.texto.length > 180 ? item.texto.substring(0,180) + '...' : item.texto;
+            return `<div class="timeline-item">
+                <div class="timeline-dot ${cls}"></div>
+                <div class="timeline-box">
+                    <div class="timeline-header">
+                        <span style="color:var(--text); font-weight:600; font-size:0.85rem">${tipo}</span>
+                        <span style="color:var(--text2); font-size:0.72rem">${item.data}</span>
+                    </div>
+                    <div style="color:var(--text2); font-size:0.75rem">${info}</div>
+                    <div style="color:var(--text2); font-size:0.82rem; margin-top:6px">${resumo}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }).catch(e => console.error("Erro histórico:", e));
+}
+</script>
+</body>
+</html>

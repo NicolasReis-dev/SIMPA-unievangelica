@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPA - Alunos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --border:#2a2a2a; --border2:#333; --text:#fff; --text2:#888; --text3:#555; --sidebar:#0a0a0a; }
+        [data-theme="light"] { --bg:#f4f6f9; --bg2:#ffffff; --bg3:#f0f0f0; --border:#e0e0e0; --border2:#ccc; --text:#111; --text2:#555; --text3:#999; --sidebar:#1e293b; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); transition: background 0.3s, color 0.3s; }
+        .card { background-color: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+        .sidebar { background-color: var(--sidebar); min-height: 100vh; border-right: 1px solid var(--border2); }
+        .nav-link { color: #aaa; border-radius: 8px; padding: 0.6rem 1rem !important; transition: all 0.2s; }
+        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+        .nav-link.active-link { color: #fff !important; background: rgba(255,255,255,0.15); font-weight: 600; }
+        .table-dark { --bs-table-bg: var(--bg2); --bs-table-hover-bg: var(--bg3); --bs-table-color: var(--text); }
+        .table thead th { border-color: var(--border2); color: var(--text2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; user-select: none; }
+        .table thead th:hover { color: var(--text); }
+        .table tbody td { color: var(--text); border-color: var(--border); }
+        .badge-ok      { background:#1a3a24; color:#4ade80; border-radius:20px; padding:3px 12px; font-size:0.75rem; display:inline-block; }
+        .badge-atencao { background:#3a2e0a; color:#fbbf24; border-radius:20px; padding:3px 12px; font-size:0.75rem; display:inline-block; }
+        .badge-critico { background:#3a0e0a; color:#f87171; border-radius:20px; padding:3px 12px; font-size:0.75rem; display:inline-block; }
+        [data-theme="light"] .badge-ok      { background:#d1fae5; color:#065f46; }
+        [data-theme="light"] .badge-atencao { background:#fef3c7; color:#92400e; }
+        [data-theme="light"] .badge-critico { background:#fee2e2; color:#991b1b; }
+        .form-control, .form-select { background-color: var(--bg3); border-color: var(--border2); color: var(--text); }
+        .form-control:focus, .form-select:focus { background-color: var(--bg3); border-color: #0dcaf0; color: var(--text); box-shadow: none; }
+        .form-control::placeholder { color: var(--text3); }
+        .simpa-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 2px; }
+        .simpa-logo span { color: #0dcaf0; }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.show { display:flex; }
+        .modal-box { background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:2rem; width:100%; max-width:500px; max-height:85vh; overflow-y:auto; }
+        .btn-ia { background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; }
+        .btn-ia:hover { border-color: #0dcaf0; color: #0dcaf0; }
+        .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+        .theme-toggle:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="text-center mb-5 px-3">
+                <div class="simpa-logo">SIM<span>PA</span></div>
+                <div style="font-size:0.65rem; color:#777; letter-spacing:1px; margin-top:4px;">SISTEMA ACADÊMICO</div>
+            </div>
+            <ul class="nav flex-column px-2 gap-1">
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link active-link" href="/pagina_alunos">👥 Alunos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analise">📈 Análise</a></li>
+                <li class="nav-item"><a class="nav-link" href="/configuracoes">⚙️ Configurações</a></li>
+            </ul>
+            <div class="px-3 mt-4">
+                <button class="theme-toggle w-100" onclick="alternarTema()">🌙 Modo Claro</button>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom border-secondary">
+                <h1 class="h3 mb-0">👥 Alunos</h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm px-3" onclick="exportarCSV()">⬇ Exportar CSV</button>
+                    <button class="btn btn-info btn-sm px-3" onclick="abrirModal('cadastro')">+ Cadastrar Aluno</button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" id="campo-busca" class="form-control" placeholder="🔍 Buscar por nome ou matrícula..." oninput="filtrarTabela()">
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="tabela-alunos">
+                        <thead>
+                            <tr>
+                                <th onclick="ordenar('matricula')">Matrícula ↕</th>
+                                <th onclick="ordenar('nome')">Nome ↕</th>
+                                <th onclick="ordenar('nota_1')">Nota 1 ↕</th>
+                                <th onclick="ordenar('nota_2')">Nota 2 ↕</th>
+                                <th onclick="ordenar('media_atual')">Média ↕</th>
+                                <th onclick="ordenar('faltas')">Faltas ↕</th>
+                                <th>Status</th>
+                                <th>IA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-body">
+                            <tr><td colspan="8" class="text-center py-4" style="color:var(--text2)">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-3 py-2" style="border-top: 1px solid var(--border)">
+                    <small style="color:var(--text2)" id="contador-alunos">—</small>
+                    <button class="btn btn-link btn-sm float-end p-0" style="color:var(--text2)" onclick="carregarAlunos()">↻ Atualizar</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal Cadastro -->
+<div id="modal-cadastro" class="modal-overlay">
+    <div class="modal-box">
+        <h5 class="mb-4" style="color:var(--text)">+ Cadastrar Novo Aluno</h5>
+        <div class="row g-3">
+            <div class="col-6">
+                <label class="form-label" style="color:var(--text2); font-size:0.8rem">Matrícula</label>
+                <input type="text" id="f-matricula" class="form-control" placeholder="Ex: 2026026">
+            </div>
+            <div class="col-6">
+                <label class="form-label" style="color:var(--text2); font-size:0.8rem">Nome</label>
+                <input type="text" id="f-nome" class="form-control" placeholder="Nome completo">
+            </div>
+            <div class="col-4">
+                <label class="form-label" style="color:var(--text2); font-size:0.8rem">Nota 1</label>
+                <input type="number" id="f-nota1" class="form-control" placeholder="0.0" min="0" max="10" step="0.1">
+            </div>
+            <div class="col-4">
+                <label class="form-label" style="color:var(--text2); font-size:0.8rem">Nota 2</label>
+                <input type="number" id="f-nota2" class="form-control" placeholder="0.0" min="0" max="10" step="0.1">
+            </div>
+            <div class="col-4">
+                <label class="form-label" style="color:var(--text2); font-size:0.8rem">Faltas</label>
+                <input type="number" id="f-faltas" class="form-control" placeholder="0" min="0">
+            </div>
+        </div>
+        <div id="msg-cadastro" class="mt-3" style="display:none"></div>
+        <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-info btn-sm px-4" onclick="cadastrarAluno()">Salvar</button>
+            <button class="btn btn-outline-secondary btn-sm px-3" onclick="fecharModal('cadastro')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Orientação Individual -->
+<div id="modal-ia" class="modal-overlay">
+    <div class="modal-box">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0" style="color:var(--text)">🤖 Orientação Individual</h5>
+            <button class="btn btn-link p-0" style="color:var(--text2)" onclick="fecharModal('ia')">✕</button>
+        </div>
+        <div id="info-aluno-ia" class="mb-3 p-3 rounded" style="background:var(--bg3); font-size:0.85rem"></div>
+        <div id="texto-ia" style="color:var(--text2); line-height:1.7; font-size:0.9rem">
+            <em>⏳ Gerando orientação personalizada...</em>
+        </div>
+    </div>
+</div>
+
+<script>
+let todosAlunos = [];
+let colunaOrdem = null;
+let ordemAsc = true;
+
+const temaBtn = document.querySelector('.theme-toggle');
+function alternarTema() {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        temaBtn.textContent = '🌙 Modo Claro';
+        localStorage.setItem('tema', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        temaBtn.textContent = '☀️ Modo Escuro';
+        localStorage.setItem('tema', 'light');
+    }
+}
+if (localStorage.getItem('tema') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    temaBtn.textContent = '☀️ Modo Escuro';
+}
+
+function carregarAlunos() {
+    const tbody = document.getElementById('tabela-body');
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text2)">Carregando...</td></tr>`;
+    fetch('/alunos')
+        .then(r => r.json())
+        .then(data => { todosAlunos = data.alunos || []; renderizarTabela(todosAlunos); })
+        .catch(e => { tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Erro: ${e.message}</td></tr>`; });
+}
+
+function renderizarTabela(alunos) {
+    const tbody = document.getElementById('tabela-body');
+    document.getElementById('contador-alunos').innerText = `${alunos.length} aluno(s) encontrado(s)`;
+    if (!alunos || alunos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text2)">Nenhum aluno encontrado.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = alunos.map(a => {
+        const media  = parseFloat(a.media_atual);
+        const faltas = parseInt(a.faltas);
+        let badge;
+        if (media >= 7 && faltas <= 5)       badge = '<span class="badge-ok">Regular</span>';
+        else if (media >= 5 || faltas <= 10)  badge = '<span class="badge-atencao">Atenção</span>';
+        else                                  badge = '<span class="badge-critico">Risco</span>';
+        return `<tr>
+            <td style="color:var(--text2)">${a.matricula}</td>
+            <td style="color:var(--text); font-weight:500">${a.nome}</td>
+            <td>${a.nota_1}</td>
+            <td>${a.nota_2}</td>
+            <td class="fw-bold">${media.toFixed(2)}</td>
+            <td>${faltas}</td>
+            <td>${badge}</td>
+            <td><button class="btn-ia" onclick="gerarOrientacaoIndividual(${a.matricula}, '${a.nome}', ${media.toFixed(2)}, ${faltas})">🤖 Analisar</button></td>
+        </tr>`;
+    }).join('');
+}
+
+function filtrarTabela() {
+    const busca = document.getElementById('campo-busca').value.toLowerCase();
+    renderizarTabela(todosAlunos.filter(a => a.nome.toLowerCase().includes(busca) || String(a.matricula).includes(busca)));
+}
+
+function ordenar(coluna) {
+    if (colunaOrdem === coluna) ordemAsc = !ordemAsc;
+    else { colunaOrdem = coluna; ordemAsc = true; }
+    const sorted = [...todosAlunos].sort((a, b) => {
+        let va = a[coluna], vb = b[coluna];
+        if (!isNaN(va)) { va = parseFloat(va); vb = parseFloat(vb); }
+        if (va < vb) return ordemAsc ? -1 : 1;
+        if (va > vb) return ordemAsc ? 1 : -1;
+        return 0;
+    });
+    renderizarTabela(sorted);
+}
+
+function exportarCSV() {
+    const linhas = [['matricula','nome','nota_1','nota_2','media','faltas']];
+    todosAlunos.forEach(a => linhas.push([a.matricula, a.nome, a.nota_1, a.nota_2, a.media_atual, a.faltas]));
+    const csv = linhas.map(l => l.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = 'alunos_simpa.csv'; link.click();
+}
+
+function abrirModal(id) { document.getElementById('modal-' + id).classList.add('show'); }
+function fecharModal(id) { document.getElementById('modal-' + id).classList.remove('show'); }
+
+function gerarOrientacaoIndividual(matricula, nome, media, faltas) {
+    document.getElementById('info-aluno-ia').innerHTML = `
+        <span style="color:var(--text); font-weight:bold">${nome}</span>
+        <span style="color:var(--text2)" class="ms-2">Matrícula: ${matricula}</span><br>
+        <span class="text-success">Média: ${media}</span>
+        <span class="text-warning ms-3">Faltas: ${faltas}</span>
+    `;
+    document.getElementById('texto-ia').innerHTML = '<em class="text-warning">⏳ Gerando orientação personalizada...</em>';
+    abrirModal('ia');
+    fetch('/orientacao_individual', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matricula })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.erro) {
+            document.getElementById('texto-ia').innerHTML = `<span class="text-danger">❌ ${data.erro}</span>`;
+        } else {
+            let txt = data.orientacao.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            document.getElementById('texto-ia').innerHTML = `<div style="color:var(--text)">${txt}</div>`;
+        }
+    })
+    .catch(e => { document.getElementById('texto-ia').innerHTML = `<span class="text-danger">❌ ${e.message}</span>`; });
+}
+
+function cadastrarAluno() {
+    const matricula = document.getElementById('f-matricula').value.trim();
+    const nome      = document.getElementById('f-nome').value.trim();
+    const nota_1    = document.getElementById('f-nota1').value;
+    const nota_2    = document.getElementById('f-nota2').value;
+    const faltas    = document.getElementById('f-faltas').value;
+    const msg       = document.getElementById('msg-cadastro');
+    if (!matricula || !nome) {
+        msg.style.display = 'block';
+        msg.innerHTML = '<span class="text-danger">⚠ Matrícula e nome são obrigatórios.</span>';
+        return;
+    }
+    fetch('/alunos', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matricula, nome, nota_1: parseFloat(nota_1)||0, nota_2: parseFloat(nota_2)||0, faltas: parseInt(faltas)||0 })
+    })
+    .then(r => r.json())
+    .then(data => {
+        msg.style.display = 'block';
+        if (data.erro) {
+            msg.innerHTML = `<span class="text-danger">❌ ${data.erro}</span>`;
+        } else {
+            msg.innerHTML = `<span class="text-success">✅ ${data.mensagem}</span>`;
+            setTimeout(() => { fecharModal('cadastro'); carregarAlunos(); }, 1500);
+        }
+    })
+    .catch(e => { msg.style.display='block'; msg.innerHTML=`<span class="text-danger">❌ ${e.message}</span>`; });
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
+});
+
+carregarAlunos();
+</script>
+</body>
+</html>

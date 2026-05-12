@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPA - Relatório do Aluno</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --border:#2a2a2a; --border2:#333; --text:#fff; --text2:#888; --text3:#555; --sidebar:#0a0a0a; }
+        [data-theme="light"] { --bg:#f4f6f9; --bg2:#fff; --bg3:#f0f0f0; --border:#e0e0e0; --border2:#ccc; --text:#111; --text2:#555; --text3:#999; --sidebar:#1e293b; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); transition: background 0.3s; }
+        .card { background-color: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+        .sidebar { background-color: var(--sidebar); min-height: 100vh; border-right: 1px solid var(--border2); }
+        .nav-link { color: #aaa; border-radius: 8px; padding: 0.6rem 1rem !important; transition: all 0.2s; }
+        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+        .nav-link.active-link { color: #fff !important; background: rgba(255,255,255,0.15); font-weight: 600; }
+        .simpa-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 2px; }
+        .simpa-logo span { color: #0dcaf0; }
+        .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; }
+
+        /* Barra de progresso de aprovação */
+        .prob-bar-track { background: var(--bg3); border-radius: 20px; height: 12px; overflow: hidden; }
+        .prob-bar-fill { height: 100%; border-radius: 20px; transition: width 1s ease; }
+
+        /* Info grid */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .info-cell { background: var(--bg3); border-radius: 10px; padding: 1rem; text-align: center; }
+        .info-cell .ic-label { font-size: 0.7rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
+        .info-cell .ic-value { font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
+
+        /* Email box */
+        .email-box { background: var(--bg3); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; }
+
+        /* Histórico mini */
+        .hist-mini { background: var(--bg3); border-left: 3px solid #4ade80; border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="text-center mb-5 px-3">
+                <div class="simpa-logo">SIM<span>PA</span></div>
+                <div style="font-size:0.65rem; color:#777; letter-spacing:1px; margin-top:4px;">SISTEMA ACADÊMICO</div>
+            </div>
+            <ul class="nav flex-column px-2 gap-1">
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pagina_alunos">👥 Alunos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analise">📈 Análise</a></li>
+                <li class="nav-item"><a class="nav-link" href="/configuracoes">⚙️ Configurações</a></li>
+            </ul>
+            <div class="px-3 mt-4">
+                <button class="theme-toggle w-100" onclick="alternarTema()">🌙 Modo Claro</button>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom border-secondary">
+                <div>
+                    <a href="/pagina_alunos" style="color:var(--text2); font-size:0.82rem; text-decoration:none">← Voltar para Alunos</a>
+                    <h1 class="h3 mb-0 mt-1" id="titulo-aluno">Carregando...</h1>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-info btn-sm" onclick="gerarOrientacao()">🤖 Gerar Orientação</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="gerarEmail()">✉️ Gerar E-mail</button>
+                </div>
+            </div>
+
+            <!-- Info cards -->
+            <div class="info-grid mb-4" id="info-grid">
+                <div class="info-cell"><div class="ic-label">Nota 1</div><div class="ic-value text-info" id="ic-n1">—</div></div>
+                <div class="info-cell"><div class="ic-label">Nota 2</div><div class="ic-value text-info" id="ic-n2">—</div></div>
+                <div class="info-cell"><div class="ic-label">Média Final</div><div class="ic-value" id="ic-media">—</div></div>
+                <div class="info-cell"><div class="ic-label">Faltas</div><div class="ic-value text-warning" id="ic-faltas">—</div></div>
+                <div class="info-cell"><div class="ic-label">Matrícula</div><div class="ic-value" style="font-size:1rem; padding-top:6px" id="ic-matricula">—</div></div>
+            </div>
+
+            <!-- Previsão de aprovação -->
+            <div class="card p-4 mb-4">
+                <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-3">🎯 Previsão de Aprovação</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span style="font-size:0.85rem; color:var(--text2)">Probabilidade estimada</span>
+                    <span style="font-weight:700; font-size:1rem" id="prob-texto">—</span>
+                </div>
+                <div class="prob-bar-track">
+                    <div class="prob-bar-fill" id="prob-bar" style="width:0%"></div>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text2)" class="mt-2 mb-0">Baseado na média atual e frequência. Não considera provas futuras.</p>
+            </div>
+
+            <!-- Gráfico radar-like: notas comparadas à turma -->
+            <div class="card p-4 mb-4">
+                <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-3">📊 Desempenho vs Turma</h6>
+                <canvas id="grafico-comparativo" height="60"></canvas>
+            </div>
+
+            <!-- Orientação IA -->
+            <div class="card p-4 mb-4">
+                <h6 class="text-info mb-3">🤖 Orientação Individual (IA)</h6>
+                <div id="box-orientacao" style="color:var(--text2); line-height:1.7; font-size:0.9rem">
+                    <em>Clique em "Gerar Orientação" para a IA analisar este aluno...</em>
+                </div>
+            </div>
+
+            <!-- E-mail gerado -->
+            <div class="card p-4 mb-4" id="card-email" style="display:none">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0" style="color:var(--text2); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">✉️ E-mail Gerado pela IA</h6>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="copiarEmail()">📋 Copiar</button>
+                </div>
+                <div class="email-box" id="email-texto"></div>
+            </div>
+
+            <!-- Histórico de orientações do aluno -->
+            <div class="card p-4">
+                <h6 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text2)" class="mb-3">🕐 Histórico de Orientações</h6>
+                <div id="historico-aluno">
+                    <p style="color:var(--text2); font-size:0.85rem">Nenhuma orientação gerada ainda para este aluno.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+const matricula = {{ matricula }};
+let nomeAluno = '';
+
+const temaBtn = document.querySelector('.theme-toggle');
+function alternarTema() {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        temaBtn.textContent = '🌙 Modo Claro';
+        localStorage.setItem('tema', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        temaBtn.textContent = '☀️ Modo Escuro';
+        localStorage.setItem('tema', 'light');
+    }
+}
+if (localStorage.getItem('tema') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    temaBtn.textContent = '☀️ Modo Escuro';
+}
+
+window.onload = function() { carregarAluno(); };
+
+function carregarAluno() {
+    fetch(`/alunos/${matricula}`)
+        .then(r => r.json())
+        .then(a => {
+            nomeAluno = a.nome;
+            document.getElementById('titulo-aluno').innerText = '👤 ' + a.nome;
+            document.getElementById('ic-n1').innerText = a.nota_1;
+            document.getElementById('ic-n2').innerText = a.nota_2;
+            document.getElementById('ic-faltas').innerText = a.faltas;
+            document.getElementById('ic-matricula').innerText = a.matricula;
+
+            const media = parseFloat(a.media_atual);
+            const corMedia = media >= 7 ? '#4ade80' : media >= 5 ? '#fbbf24' : '#f87171';
+            document.getElementById('ic-media').innerText = media.toFixed(2);
+            document.getElementById('ic-media').style.color = corMedia;
+
+            // Barra de aprovação
+            const prob = a.prob_aprovacao;
+            const corBar = prob >= 70 ? '#4ade80' : prob >= 40 ? '#fbbf24' : '#f87171';
+            document.getElementById('prob-texto').innerText = prob + '%';
+            document.getElementById('prob-texto').style.color = corBar;
+            const bar = document.getElementById('prob-bar');
+            bar.style.background = corBar;
+            setTimeout(() => { bar.style.width = prob + '%'; }, 100);
+
+            // Histórico
+            if (a.historico_orientacoes && a.historico_orientacoes.length > 0) {
+                document.getElementById('historico-aluno').innerHTML = a.historico_orientacoes.map(h => `
+                    <div class="hist-mini">
+                        <div class="d-flex justify-content-between">
+                            <span style="color:var(--text); font-size:0.82rem; font-weight:600">Orientação</span>
+                            <span style="color:var(--text2); font-size:0.72rem">${h.data}</span>
+                        </div>
+                        <div style="color:var(--text2); font-size:0.82rem; margin-top:4px">${h.texto.substring(0,200)}...</div>
+                    </div>
+                `).join('');
+            }
+
+            // Gráfico comparativo com turma
+            fetch('/alunos').then(r => r.json()).then(d => {
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                const tickC = isLight ? '#888' : '#666';
+                const gridC = isLight ? '#e5e7eb' : '#222';
+                const mediasTurma = d.alunos.map(x => parseFloat(x.media_atual));
+                const mediaTurma = mediasTurma.reduce((s,v)=>s+v,0)/mediasTurma.length;
+
+                new Chart(document.getElementById('grafico-comparativo'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Nota 1', 'Nota 2', 'Média Final', 'Média da Turma'],
+                        datasets: [{
+                            label: nomeAluno,
+                            data: [a.nota_1, a.nota_2, media, null],
+                            backgroundColor: ['#0dcaf0aa','#4ade80aa', corMedia + 'aa', 'transparent'],
+                            borderColor: ['#0dcaf0','#4ade80', corMedia, 'transparent'],
+                            borderWidth: 1, borderRadius: 4
+                        }, {
+                            label: 'Média da Turma',
+                            data: [null, null, null, parseFloat(mediaTurma.toFixed(2))],
+                            backgroundColor: ['#f8717188'],
+                            borderColor: ['#f87171'],
+                            borderWidth: 1, borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { labels: { color: tickC } } },
+                        scales: {
+                            x: { ticks:{color:tickC}, grid:{color:gridC} },
+                            y: { min:0, max:10, ticks:{color:tickC}, grid:{color:gridC} }
+                        }
+                    }
+                });
+            });
+        })
+        .catch(e => { document.getElementById('titulo-aluno').innerText = 'Aluno não encontrado'; });
+}
+
+function gerarOrientacao() {
+    const box = document.getElementById('box-orientacao');
+    box.innerHTML = '<em class="text-warning">⏳ Gerando orientação personalizada...</em>';
+    fetch('/orientacao_individual', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ matricula })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.erro) {
+            box.innerHTML = `<span class="text-danger">❌ ${data.erro}</span>`;
+        } else {
+            let txt = data.orientacao.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+            box.innerHTML = `<div style="color:var(--text)">${txt}</div>`;
+        }
+    })
+    .catch(e => { box.innerHTML = `<span class="text-danger">❌ ${e.message}</span>`; });
+}
+
+function gerarEmail() {
+    const card = document.getElementById('card-email');
+    const box = document.getElementById('email-texto');
+    card.style.display = 'block';
+    box.textContent = '⏳ Gerando e-mail...';
+    fetch('/gerar_email', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ matricula })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.erro) {
+            box.textContent = '❌ ' + data.erro;
+        } else {
+            box.textContent = data.email;
+        }
+    })
+    .catch(e => { box.textContent = '❌ ' + e.message; });
+}
+
+function copiarEmail() {
+    const texto = document.getElementById('email-texto').textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+        const btn = event.target;
+        btn.textContent = '✅ Copiado!';
+        setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
+    });
+}
+</script>
+</body>
+</html>

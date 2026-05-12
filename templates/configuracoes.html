@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPA - Configurações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --border:#2a2a2a; --border2:#333; --text:#fff; --text2:#888; --text3:#555; --sidebar:#0a0a0a; }
+        [data-theme="light"] { --bg:#f4f6f9; --bg2:#ffffff; --bg3:#f0f0f0; --border:#e0e0e0; --border2:#ccc; --text:#111; --text2:#555; --text3:#999; --sidebar:#1e293b; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); transition: background 0.3s, color 0.3s; }
+        .card { background-color: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+        .sidebar { background-color: var(--sidebar); min-height: 100vh; border-right: 1px solid var(--border2); }
+        .simpa-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 3px; }
+        .simpa-logo span { color: #0dcaf0; }
+        .nav-link { color: #aaa; border-radius: 8px; padding: 0.6rem 1rem !important; transition: all 0.2s; }
+        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+        .nav-link.active-link { color: #fff !important; background: rgba(255,255,255,0.15); font-weight: 600; }
+        .form-control, .form-select { background-color: var(--bg3); border-color: var(--border2); color: var(--text); }
+        .form-control:focus, .form-select:focus { background-color: var(--bg3); border-color: #0dcaf0; color: var(--text); box-shadow: 0 0 0 0.2rem rgba(13,202,240,.15); }
+        .form-control:disabled { background-color: var(--bg); color: var(--text3); }
+        .form-label { color: var(--text2); font-size: 0.82rem; }
+        .section-label { color: #0dcaf0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+        .theme-toggle:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="text-center mb-5 px-3">
+                <div class="simpa-logo">SIM<span>PA</span></div>
+                <div style="font-size:0.65rem; color:#777; letter-spacing:1px; margin-top:4px;">SISTEMA ACADÊMICO</div>
+            </div>
+            <ul class="nav flex-column px-2 gap-1">
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pagina_alunos">👥 Alunos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analise">📈 Análise</a></li>
+                <li class="nav-item"><a class="nav-link active-link" href="/configuracoes">⚙️ Configurações</a></li>
+            </ul>
+            <div class="px-3 mt-4">
+                <button class="theme-toggle w-100" onclick="alternarTema()">🌙 Modo Claro</button>
+            </div>
+            <div class="px-3 mt-2">
+                <a href="/logout" class="btn btn-outline-danger btn-sm w-100" style="font-size:0.75rem">🚪 Sair</a>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="pb-2 mb-4 border-bottom border-secondary">
+                <h1 class="h3 mb-0">⚙️ Configurações do Sistema</h1>
+                <p style="color:var(--text2)" class="small mt-1">Gerencie os parâmetros do SIMPA</p>
+            </div>
+
+            <div class="card p-4 mb-3">
+                <p class="section-label mb-3">🎯 Critérios de Risco</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Média mínima para aprovação</label>
+                        <input type="number" class="form-control" value="5.0" min="0" max="10" step="0.5">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Máximo de faltas permitidas</label>
+                        <input type="number" class="form-control" value="10" min="0" max="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alerta quando média abaixo de</label>
+                        <input type="number" class="form-control" value="6.0" min="0" max="10" step="0.5">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alerta quando faltas acima de</label>
+                        <input type="number" class="form-control" value="8" min="0" max="100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-3">
+                <p class="section-label mb-3">🤖 Inteligência Artificial</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Modelo GROQ</label>
+                        <select class="form-select">
+                            <option selected>llama-3.3-70b-versatile</option>
+                            <option>llama-3.1-8b-instant</option>
+                            <option>mixtral-8x7b-32768</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Idioma das respostas</label>
+                        <select class="form-select">
+                            <option selected>Português (Brasil)</option>
+                            <option>English</option>
+                            <option>Español</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Chave da API (GROQ_API_KEY)</label>
+                        <input type="password" class="form-control" placeholder="Configurada via arquivo .env  ✓" disabled>
+                        <small style="color:var(--text2)">Para alterar, edite o arquivo <code>.env</code> na raiz do projeto.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-3">
+                <p class="section-label mb-3">🎨 Aparência</p>
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label">Tema do sistema</label>
+                        <div class="mt-1">
+                            <button class="btn btn-outline-secondary btn-sm px-4" onclick="alternarTema()" id="btn-tema-main">🌙 Alternar para Modo Claro</button>
+                        </div>
+                        <small style="color:var(--text2)" class="mt-1 d-block">A preferência é salva no navegador.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-4">
+                <p class="section-label mb-3">🗄️ Sistema</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Banco de dados</label>
+                        <input type="text" class="form-control" value="data/simpa.db (SQLite)" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Porta do servidor</label>
+                        <input type="number" class="form-control" value="5001" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Senha de acesso</label>
+                        <input type="password" class="form-control" placeholder="Configurada via .env (SIMPA_SENHA)" disabled>
+                        <small style="color:var(--text2)">Altere no <code>.env</code> com <code>SIMPA_SENHA=suasenha</code></small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Sessão</label>
+                        <div class="mt-1">
+                            <a href="/logout" class="btn btn-outline-danger btn-sm px-3">🚪 Encerrar sessão</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-info btn-sm px-4" onclick="salvarConfiguracoes()">💾 Salvar</button>
+            </div>
+            <div id="msg-salvo" class="mt-3" style="display:none">
+                <div class="alert alert-success py-2">✅ Configurações salvas!</div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+const temaBtn = document.querySelector('.theme-toggle');
+const temaBtnMain = document.getElementById('btn-tema-main');
+
+function atualizarBotoes(tema) {
+    const txt = tema === 'light' ? '☀️ Modo Escuro' : '🌙 Modo Claro';
+    const txtMain = tema === 'light' ? '☀️ Alternar para Modo Escuro' : '🌙 Alternar para Modo Claro';
+    if (temaBtn) temaBtn.textContent = txt;
+    if (temaBtnMain) temaBtnMain.textContent = txtMain;
+}
+
+function alternarTema() {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        localStorage.setItem('tema', 'dark');
+        atualizarBotoes('dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        localStorage.setItem('tema', 'light');
+        atualizarBotoes('light');
+    }
+}
+
+if (localStorage.getItem('tema') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    atualizarBotoes('light');
+}
+
+function salvarConfiguracoes() {
+    const msg = document.getElementById('msg-salvo');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
